@@ -47,12 +47,15 @@ BPTree::BPTree() {
 }
 
 // Search operation
- std::string BPTree::search(int x) {
+ // Search Operation
+std::string BPTree::search(int x) {
   if (root == NULL) {
+    // Si la raíz es nula, el árbol está vacío
     cout << "Tree is empty\n";
   } else {
     Node *cursor = root;
     while (cursor->IS_LEAF == false) {
+      // Recorremos hacia abajo hasta llegar a una hoja
       for (int i = 0; i < cursor->size; i++) {
         if (x < cursor->key[i]) {
           cursor = cursor->ptr[i];
@@ -64,20 +67,20 @@ BPTree::BPTree() {
         }
       }
     }
+    // Buscamos en la hoja actual
     for (int i = 0; i < cursor->size; i++) {
       if (cursor->key[i] == x) {
-        //cout << "Found\n";
-        return "Found";
+        return "Found"; // Clave encontrada
       }
     }
-    //cout << "Not found\n";
-    return "Not Found";
+    return "Not Found"; // Clave no encontrada
   }
 }
 
 // Insert Operation
 void BPTree::insert(int x) {
   if (root == NULL) {
+    // Si la raíz es nula, creamos un nuevo nodo como raíz
     root = new Node;
     root->key[0] = x;
     root->IS_LEAF = true;
@@ -86,6 +89,7 @@ void BPTree::insert(int x) {
     Node *cursor = root;
     Node *parent;
     while (cursor->IS_LEAF == false) {
+      // Recorremos hacia abajo hasta llegar a una hoja
       parent = cursor;
       for (int i = 0; i < cursor->size; i++) {
         if (x < cursor->key[i]) {
@@ -99,6 +103,7 @@ void BPTree::insert(int x) {
       }
     }
     if (cursor->size < MAX) {
+      // Si el nodo no está lleno, insertamos directamente en él
       int i = 0;
       while (x > cursor->key[i] && i < cursor->size)
         i++;
@@ -110,6 +115,8 @@ void BPTree::insert(int x) {
       cursor->ptr[cursor->size] = cursor->ptr[cursor->size - 1];
       cursor->ptr[cursor->size - 1] = NULL;
     } else {
+      // Si el nodo está lleno, creamos un nuevo nodo hoja
+      // y redistribuimos las claves entre los nodos
       Node *newLeaf = new Node;
       int virtualNode[MAX + 1];
       for (int i = 0; i < MAX; i++) {
@@ -149,9 +156,11 @@ void BPTree::insert(int x) {
   }
 }
 
-// Insert Operation
+// Insert Operation (Para los nodos internos en el un B+ tree)
 void BPTree::insertInternal(int x, Node *cursor, Node *child) {
   if (cursor->size < MAX) {
+    // Si el tamaño del nodo cursor es menor que el máximo permitido (MAX),
+    // podemos insertar directamente en este nodo.
     int i = 0;
     while (x > cursor->key[i] && i < cursor->size)
       i++;
@@ -165,6 +174,8 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
     cursor->size++;
     cursor->ptr[i + 1] = child;
   } else {
+    // Si el nodo está lleno, creamos un nuevo nodo interno (newInternal)
+    // y redistribuimos las claves y punteros entre los nodos.
     Node *newInternal = new Node;
     int virtualKey[MAX + 1];
     Node *virtualPtr[MAX + 2];
@@ -195,6 +206,8 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
       newInternal->ptr[i] = virtualPtr[j];
     }
     if (cursor == root) {
+      // Si el cursor es la raíz, creamos un nuevo nodo raíz (newRoot)
+      // y actualizamos los punteros.
       Node *newRoot = new Node;
       newRoot->key[0] = cursor->key[cursor->size];
       newRoot->ptr[0] = cursor;
@@ -203,44 +216,63 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
       newRoot->size = 1;
       root = newRoot;
     } else {
+      // Si no es la raíz, llamamos a la función insertInternal recursivamente para manejar
+      // la inserción en nodos internos.
       insertInternal(cursor->key[cursor->size], findParent(root, cursor), newInternal);
     }
   }
 }
 
-// Find the parent
+// Encontrando el Padre del Nodo 
 Node *BPTree::findParent(Node *cursor, Node *child) {
   Node *parent;
   if (cursor->IS_LEAF || (cursor->ptr[0])->IS_LEAF) {
+    // Si el nodo cursor es una hoja o su primer puntero es una hoja,
+    // no tiene un nodo padre (es la raíz o una hoja).
     return NULL;
   }
   for (int i = 0; i < cursor->size + 1; i++) {
     if (cursor->ptr[i] == child) {
+      // Si encontramos que el puntero actual apunta al nodo hijo,
+      // asignamos el nodo cursor como el nodo padre.
       parent = cursor;
       return parent;
     } else {
+      // Si no es el nodo hijo actual, llamamos recursivamente a findParent
+      // para buscar en los nodos descendientes.
       parent = findParent(cursor->ptr[i], child);
       if (parent != NULL)
         return parent;
     }
   }
+  // Si no encontramos el nodo hijo en los punteros del nodo cursor,
+  // devolvemos NULL (no se encontró un nodo padre).
   return parent;
 }
 
-// Print the tree
+
+// Imprimiendo el Arbol
 void BPTree::display(Node *cursor) {
   if (cursor != NULL) {
+    // Si el nodo cursor no es nulo, procedemos a mostrar su contenido
     for (int i = 0; i < cursor->size; i++) {
       cout << cursor->key[i] << " ";
+      // Imprimimos cada clave en el nodo
     }
-    cout << "\n";
+    cout << "\n"; // Agregamos un salto de línea después de imprimir las claves
+
     if (cursor->IS_LEAF != true) {
+      // Si el nodo cursor no es una hoja (es un nodo interno),
+      // continuamos mostrando los nodos descendientes
       for (int i = 0; i < cursor->size + 1; i++) {
         display(cursor->ptr[i]);
+        // Llamamos recursivamente a la función display para mostrar
+        // los nodos descendientes (hijos) del nodo actual
       }
     }
   }
 }
+
 
 // Get the root
 Node *BPTree::getRoot() {
@@ -262,29 +294,28 @@ int main() {
   node.insert(20);
   node.display(node.getRoot());
 
-  cout << "Buscando 85\n";
+  cout << "Buscando 15\n";
   cout << node.search(15);
-  cout << "\n";
+  cout << "\n";   cout << "\n";
 
 
-    // Pruebas unitarias
-    BPTree tree;
+  // Implementación con Pruebas unitarias
+  BPTree tree;
 
-    // Prueba 1: Verificar que el árbol esté vacío al inicio
-    assert(tree.getRoot() == nullptr);
+  // Prueba 1: Verificar que el árbol esté vacío al inicio
+  assert(tree.getRoot() == nullptr);
 
-    // Prueba 2: Insertar un valor y verificar que se encuentre
-    tree.insert(42);
-    assert(tree.search(42) == "Found"); // Verifica que el valor 42 esté presente
+  // Prueba 2: Insertar un valor y verificar que se encuentre
+  tree.insert(42);
+  assert(tree.search(42) == "Found"); // Verifica que el valor 42 esté presente
 
-    // Prueba 3: Insertar un valor y verificar que no se encuentre
-    tree.insert(10);
-    assert(tree.search(20) == "Not Found"); // Verifica que el valor 20 no esté presente
+  // Prueba 3: Insertar un valor y verificar que no se encuentre
+  tree.insert(10);
+  assert(tree.search(20) == "Not Found"); // Verifica que el valor 20 no esté presente
 
-       // ... (agregar más pruebas según tus necesidades)
+  // ... (agregar más pruebas según tus necesidades)
 
-    std::cout << "Todas las pruebas pasaron correctamente." << std::endl;
-    return 0;
-
+  std::cout << "Todas las pruebas pasaron correctamente." << std::endl;
+  return 0;
 
 }

@@ -12,29 +12,27 @@
 using namespace std;
 int MAX = 3;
 
-// BP node
 class Node {
   bool IS_LEAF;
   int *key, size;
   Node **ptr;
   friend class BPTree;
 
-   public:
-  Node();
+  public:
+    Node();
 };
 
-// BP tree
 class BPTree {
   Node *root;
   void insertInternal(int, Node *, Node *);
   Node *findParent(Node *, Node *);
 
-   public:
-  BPTree();
-  std::string  search(int);
-  void insert(int);
-  void display(Node *);
-  Node *getRoot();
+  public:
+    BPTree();
+    std::string  search(int);
+    void insert(int);
+    void display(Node *);
+    Node *getRoot();
 };
 
 Node::Node() {
@@ -46,8 +44,7 @@ BPTree::BPTree() {
   root = NULL;
 }
 
-// Search operation
- // Search Operation
+// Metodo buscar
 std::string BPTree::search(int x) {
   if (root == NULL) {
     // Si la raíz es nula, el árbol está vacío
@@ -77,7 +74,7 @@ std::string BPTree::search(int x) {
   }
 }
 
-// Insert Operation
+// Metodo insertar
 void BPTree::insert(int x) {
   if (root == NULL) {
     // Si la raíz es nula, creamos un nuevo nodo como raíz
@@ -156,7 +153,7 @@ void BPTree::insert(int x) {
   }
 }
 
-// Insert Operation (Para los nodos internos en el un B+ tree)
+// Metodo de insertar para los nodos internos en el un B+ tree)
 void BPTree::insertInternal(int x, Node *cursor, Node *child) {
   if (cursor->size < MAX) {
     // Si el tamaño del nodo cursor es menor que el máximo permitido (MAX),
@@ -281,7 +278,7 @@ Node *BPTree::getRoot() {
 
 int main() {
 
-  // Implementación  
+  // Implementación
   BPTree node;
   node.insert(5);
   node.insert(15);
@@ -292,14 +289,15 @@ int main() {
   node.insert(40);
   node.insert(30);
   node.insert(20);
+
   node.display(node.getRoot());
 
   cout << "Buscando 15\n";
-  cout << node.search(15);
-  cout << "\n";   cout << "\n";
+  cout << node.search(15); // Imprimir si se encontró o no se encontró
+  cout << "\n";
 
 
-  // Implementación con Pruebas unitarias
+  // Pruebas unitarias
   BPTree tree;
 
   // Prueba 1: Verificar que el árbol esté vacío al inicio
@@ -315,7 +313,8 @@ int main() {
 
   // ... (agregar más pruebas según tus necesidades)
 
-  std::cout << "Todas las pruebas pasaron correctamente." << std::endl;
+  std::cout << "Todas las pruebas pasaron correctamente. \n\n\n" << std::endl;
+
   return 0;
 
 }

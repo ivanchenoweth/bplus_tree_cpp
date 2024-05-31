@@ -6,6 +6,9 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <cassert>
+
+
 using namespace std;
 int MAX = 3;
 
@@ -28,7 +31,7 @@ class BPTree {
 
    public:
   BPTree();
-  void search(int);
+  std::string  search(int);
   void insert(int);
   void display(Node *);
   Node *getRoot();
@@ -44,7 +47,7 @@ BPTree::BPTree() {
 }
 
 // Search operation
-void BPTree::search(int x) {
+ std::string BPTree::search(int x) {
   if (root == NULL) {
     cout << "Tree is empty\n";
   } else {
@@ -63,11 +66,12 @@ void BPTree::search(int x) {
     }
     for (int i = 0; i < cursor->size; i++) {
       if (cursor->key[i] == x) {
-        cout << "Found\n";
-        return;
+        //cout << "Found\n";
+        return "Found";
       }
     }
-    cout << "Not found\n";
+    //cout << "Not found\n";
+    return "Not Found";
   }
 }
 
@@ -244,6 +248,8 @@ Node *BPTree::getRoot() {
 }
 
 int main() {
+
+  // Implementación  
   BPTree node;
   node.insert(5);
   node.insert(15);
@@ -256,5 +262,29 @@ int main() {
   node.insert(20);
   node.display(node.getRoot());
 
-  node.search(15);
+  cout << "Buscando 85\n";
+  cout << node.search(15);
+  cout << "\n";
+
+
+    // Pruebas unitarias
+    BPTree tree;
+
+    // Prueba 1: Verificar que el árbol esté vacío al inicio
+    assert(tree.getRoot() == nullptr);
+
+    // Prueba 2: Insertar un valor y verificar que se encuentre
+    tree.insert(42);
+    assert(tree.search(42) == "Found"); // Verifica que el valor 42 esté presente
+
+    // Prueba 3: Insertar un valor y verificar que no se encuentre
+    tree.insert(10);
+    assert(tree.search(20) == "Not Found"); // Verifica que el valor 20 no esté presente
+
+       // ... (agregar más pruebas según tus necesidades)
+
+    std::cout << "Todas las pruebas pasaron correctamente." << std::endl;
+    return 0;
+
+
 }
